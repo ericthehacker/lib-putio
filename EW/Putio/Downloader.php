@@ -2,6 +2,11 @@
 
 namespace EW\Putio;
 
+/**
+ * Convenience class to download file(s)
+ *
+ * @package EW\Putio
+ */
 class Downloader
 {
     const DIR_MIME_TYPE = 'application/x-directory';
@@ -12,10 +17,23 @@ class Downloader
     protected $downloadCallback = null;
     protected $accessToken = null;
 
+    /**
+     * Get target file ID
+     *
+     * @return string
+     */
     protected function getFileId() {
         return $this->fileId;
     }
 
+    /**
+     * Instantiate downloader instance
+     *
+     * @param string $accessToken
+     * @param string $fileId Target file ID or ID of parent dir
+     * @param string $mimeTypePattern If $fileId is actually a dir, pattern for files within to download
+     * @param callable $downloadCallback For each download file, this callback will be called with download URL
+     */
     public function __construct($accessToken, $fileId, $mimeTypePattern, callable $downloadCallback) {
         $this->fileId = $fileId;
         $this->mimeTypePattern = $mimeTypePattern;
@@ -23,6 +41,13 @@ class Downloader
         $this->accessToken = $accessToken;
     }
 
+    /**
+     * Determines final file ID(s). If file ID is dir,
+     * scan it for files which match mime type pattern and return those.
+     * Otherwise, return file ID.
+     *
+     * @return array
+     */
     public function getFinalFileIds() {
         $mimeTypePattern = $this->mimeTypePattern;
 
@@ -54,6 +79,11 @@ class Downloader
         return $this->finalFileIds;
     }
 
+    /**
+     * Actually download file(s)
+     *
+     * @throws \Exception
+     */
     public function download() {
         $fileIds = $this->getFinalFileIds();
 
